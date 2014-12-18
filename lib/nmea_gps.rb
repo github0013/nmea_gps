@@ -4,7 +4,6 @@ require "ostruct"
 
 require 'active_support'
 require 'active_support/core_ext'
-Time.zone = "UTC"
 
 require "nmea_gps/version"
 require "nmea_gps/config"
@@ -16,6 +15,7 @@ module Nmea
     protected
       def hhmmss_to_local_time(text)
         hh, mm, ss = text.chars.each_slice(2).collect{|chars| chars.join }
+        Time.zone = "UTC"
         utc_today = Time.zone.today
         Time.zone.local(utc_today.year, utc_today.month, utc_today.day, hh, mm, ss).
           in_time_zone(Nmea::Config.time_zone)
