@@ -48,7 +48,7 @@ module Nmea
           loop do 
             line = self.gps_serial_port.gets("\r\n").strip
             #                   %w[ GLL RMC VTG GGA GSA GSV ZDA].join.chars.uniq.sort.join
-            return unless match = line.match(/\A\$#{TALKER_ID}([ACDGLMRSTVZ]{3})/)
+            next unless match = line.match(/\A\$#{TALKER_ID}([ACDGLMRSTVZ]{3})/)
             
             sentence = match[1].downcase.to_sym
             set[sentence] << line
