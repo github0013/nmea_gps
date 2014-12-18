@@ -10,9 +10,6 @@ require "nmea_gps/version"
 require "nmea_gps/config"
 require "nmea_gps/gps"
 
-require "nmea_gps/sentence_base"
-Dir[Pathname(__FILE__).join("../sentences/*.rb")].each {|file| require file }
-
 module Nmea
 
   module UtcTimeable
@@ -38,3 +35,5 @@ module Nmea
 
 end
 
+require "nmea_gps/sentence_base"
+Dir[Pathname(__FILE__).join("../nmea_gps/sentences/*.rb")].each {|file| require file }
