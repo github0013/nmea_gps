@@ -47,23 +47,24 @@ describe Nmea::Gps do
     it{ expect(gps).to respond_to :zda }
   end
 
-  describe "line_set" do
+  describe "sentences_in_a_cycle" do
     before do
-      allow(serial_port).to receive(:gets).and_return *lines.collect{|line| "#{line}\r\n" }
+      allow(serial_port).to receive(:gets).and_return *sentences.collect{|sentence| "#{sentence}\r\n" }
     end
 
-    subject{ gps.send :line_set }
+    subject{ gps.send :sentences_in_a_cycle }
 
-    context "single line" do
-      let(:lines) do
+    context "single sentence" do
+      let(:sentences) do
         ["$GPGGA,075800.000,3357.7401,N,13112.3701,E,2,9,1.04,-3.6,M,27.5,M,0000,0000*74"]
       end
       it{ expect(subject.keys).to eq [:gga] }
     end
 
-    context "multiple lines" do
-      let(:lines) do
+    context "multiple sentences" do
+      let(:sentences) do
         [
+          "$GPGGA,075800.000,3357.7401,N,13112.3701,E,2,9,1.04,-3.6,M,27.5,M,0000,0000*74",
           "$GPGLL,3539.51480,N,13944.72598,E,075247.000,A,A*5D",
           "$GPGSA,A,3,24,26,05,13,21,12,15,18,,,,,1.29,0.97,0.86*00",
           "$GPGSV,3,1,11,24,70,198,52,15,63,016,,50,47,156,38,21,44,270,39*78",
@@ -97,7 +98,7 @@ describe Nmea::Gps do
 
   describe "callback!" do
     before do
-      allow(gps).to receive(:line_set).and_return(
+      allow(gps).to receive(:sentences_in_a_cycle).and_return(
         {
           gga: ["$GPGGA,075800.000,3357.7401,N,13112.3701,E,2,9,1.04,-3.6,M,27.5,M,0000,0000*74"],
           gsv: [
@@ -109,14 +110,14 @@ describe Nmea::Gps do
       )
     end
 
-    it "single line callback" do 
+    it "single sentence callback" do 
       gps.gga do |gga|
         expect(gga.class).to eq Nmea::Gps::Gga
       end
       gps.send :callback!
     end
 
-    it "multiple line callback" do
+    it "multiple sentence callback" do
       gps.gsv do |gsvs|
         expect(gsvs.count).to eq 3
         expect(gsvs.first.class).to eq Nmea::Gps::Gsv

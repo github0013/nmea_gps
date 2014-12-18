@@ -31,7 +31,7 @@ module Nmea
     end
 
     protected
-      attr_accessor :gps_serial_port, :update_hz, :callbacks, :track_thread
+      attr_accessor :gps_serial_port, :update_hz, :callbacks, :track_thread, :initial_sentence
 
     private
 
@@ -43,24 +43,40 @@ module Nmea
         sleep hz
       end
 
-      def line_set
+      def sentences_in_a_cycle
         Hash.new{|hash, key| hash[key] = [] }.tap do |set|
-          loop do 
-            line = self.gps_serial_port.gets("\r\n").strip
-            #                   %w[ GLL RMC VTG GGA GSA GSV ZDA].join.chars.uniq.sort.join
-            next unless match = line.match(/\A\$#{TALKER_ID}([ACDGLMRSTVZ]{3})/)
-            
-            sentence = match[1].downcase.to_sym
-            set[sentence] << line
-            break if sentence == :gga
+          catch(:done_one_revolution) do
+            loop do 
+              ensure_sentence do |sentence, line|
+                set[sentence] << line
+              end
+            end
           end
         end
       end
 
+      def ensure_sentence
+        yield *@buffer if @buffer
+
+        line = self.gps_serial_port.gets("\r\n").strip
+        #                   %w[ GLL RMC VTG GGA GSA GSV ZDA].join.chars.uniq.sort.join
+        return unless match = line.match(/\A\$#{TALKER_ID}([ACDGLMRSTVZ]{3})/)
+        
+        sentence = match[1].downcase.to_sym
+        if sentence == self.initial_sentence
+          @buffer = [sentence, line]
+          throw :done_one_revolution 
+        end
+
+        yield sentence, line
+
+        self.initial_sentence ||= sentence unless sentence == :gsv 
+      end
+
       def callback!
-        this_set = line_set
+        this_set = sentences_in_a_cycle
         this_set.keys.each do |sentence|
-          # TODO: error handling
+          # TODO: error handling / add a logger??
           begin
             this_callback = self.callbacks[sentence]
             next unless this_callback
