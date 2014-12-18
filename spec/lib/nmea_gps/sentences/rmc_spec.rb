@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'nmea_gps/sentences/rmc'
+Time.zone = "UTC"
 
 describe Nmea::Gps::Rmc do
   let(:line){ "$GPRMC,075333.000,A,3539.51480,N,13944.72598,E,32.84,151.55,171214,,,A*68" }

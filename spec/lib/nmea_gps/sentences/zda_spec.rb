@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'nmea_gps/sentences/zda'
+Time.zone = "UTC"
 
 describe Nmea::Gps::Zda do
   let(:line){ "$GPZDA,075936.000,17,12,2014,,*5A" }

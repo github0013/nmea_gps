@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'nmea_gps/sentences/gll'
+Time.zone = "UTC"
 
 describe Nmea::Gps::Gll do
   let(:line){ "$GPGLL,3539.51480,N,13944.72598,E,075247.000,A,A*5D" }
