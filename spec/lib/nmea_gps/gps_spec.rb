@@ -10,28 +10,20 @@ require 'nmea_gps/sentences/zda'
 
 describe Nmea::Gps do
   let(:serial_port){ double("serial_port") }
-  let(:update_hz){ 1 }
-  let(:gps){ Nmea::Gps.new serial_port, update_hz: update_hz }
-
-  describe "hz" do
-    subject{ gps.send :hz }
-    it{ expect(subject).to eq 1 }
-
-    context "10Hz" do 
-      let(:update_hz){ 10 }
-      it{ expect(subject).to eq 0.1 }
-    end
-  end
+  let(:hz){ 1 }
+  let(:how_long_to_sleep){ nil }
+  let(:gps){ Nmea::Gps.new serial_port, hz: hz }
 
   describe "frequency" do
-    before{ expect(gps).to receive(:sleep).with(hz).at_least 1 }
+    before{ expect(gps).to receive(:sleep).with(how_long_to_sleep).at_least 1 }
     
-    let(:hz){ 1 / 1 }
+    let(:hz){ 1 }
+    let(:how_long_to_sleep){ 1 }
     it{ gps.send :frequency }
 
     context "10Hz" do
-      let(:update_hz){ 10 }
-      let(:hz){ 1 / 10.0 }
+      let(:hz){ 10 }
+      let(:how_long_to_sleep){ 0.1 }
       it{ gps.send :frequency }
     end
   end

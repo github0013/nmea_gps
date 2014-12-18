@@ -3,10 +3,10 @@ module Nmea
   class Gps
     TALKER_ID = "GP"
 
-    def initialize(serial_port, update_hz: 1)
+    def initialize(serial_port, hz: 1)
       self.callbacks        = {}
       self.gps_serial_port  = serial_port
-      self.update_hz        = 1.second.to_f / update_hz.to_i
+      self.update_hz        = 1.second.to_f / (hz.to_i.zero? ? 1 : hz.to_i)
     end
 
     Dir[Pathname(__FILE__).join("../sentences/*.rb")].collect do |path|
@@ -35,12 +35,8 @@ module Nmea
 
     private
 
-      def hz
-        self.update_hz
-      end
-
       def frequency
-        sleep hz
+        sleep self.update_hz
       end
 
       def sentences_in_a_cycle
