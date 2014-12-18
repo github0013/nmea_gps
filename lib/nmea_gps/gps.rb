@@ -60,20 +60,26 @@ module Nmea
       def callback!
         this_set = line_set
         this_set.keys.each do |sentence|
-          this_callback = self.callbacks[sentence]
-          next unless this_callback
+          # TODO: error handling
+          begin
+            this_callback = self.callbacks[sentence]
+            next unless this_callback
 
-          target_class = "Nmea::Gps::#{sentence.to_s.camelcase}".constantize
+            target_class = "Nmea::Gps::#{sentence.to_s.camelcase}".constantize
 
-          object = if sentence == :gsv
-                  this_set[sentence].sort.collect do |line|
-                    target_class.new line
+            object = if sentence == :gsv
+                    this_set[sentence].sort.collect do |line|
+                      target_class.new line
+                    end
+                  else
+                    target_class.new(this_set[sentence].first)
                   end
-                else
-                  target_class.new(this_set[sentence].first)
-                end
 
-          this_callback.call object # TODO: error handling
+            this_callback.call object
+          rescue => ex
+            puts "#{ex.message} sentence:#{sentence} / #{this_set[sentence]}"
+            puts ex.backtrace.join "\n"
+          end
         end
       end
 
