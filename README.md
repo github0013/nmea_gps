@@ -92,6 +92,16 @@ gps.track!
 ## sentences
 [click here](https://github.com/github0013/nmea_gps/tree/master/lib/nmea_gps/sentences) for details
 
+| sentence | callback | parameter to be passed |
+|:----|:----|:---------------|
+| GGA | gga | Nmea::Gps::Gga |
+| GLL | gll | Nmea::Gps::Gll |
+| GSA | gsa | Nmea::Gps::Gsa |
+| GSV | gsv | [Nmea::Gps::Gsv, Nmea::Gps::Gsv, ...] |
+| RMC | rmc | Nmea::Gps::Rmc |
+| VTG | vtg | Nmea::Gps::Vtg |
+| ZDA | zda | Nmea::Gps::Zda |
+
 ## Contributing
 
 1. Fork it ( https://github.com/[my-github-username]/nmea_gps/fork )
