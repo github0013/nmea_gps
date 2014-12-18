@@ -20,6 +20,10 @@ Or install it yourself as:
 
 ```ruby
 
+# set your zone if you want to get time in you local time zone. 
+# otherwise it will be UTC
+Nmea::Config.time_zone = "Tokyo"
+
 # create a serialport to your GPS receiver
 # you should know how to open a connection between your GPS device
 # mine runs on `9600 baudrate`, `8bit`, `1stop bit`, `none parity`
