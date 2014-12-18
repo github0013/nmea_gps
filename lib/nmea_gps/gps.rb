@@ -45,7 +45,7 @@ module Nmea
 
       def sentences_in_a_cycle
         Hash.new{|hash, key| hash[key] = [] }.tap do |set|
-          catch(:done_one_revolution) do
+          catch(:done_one_cycle) do
             loop do 
               ensure_sentence do |sentence, line|
                 set[sentence] << line
@@ -65,7 +65,7 @@ module Nmea
         sentence = match[1].downcase.to_sym
         if sentence == self.initial_sentence
           @buffer = [sentence, line]
-          throw :done_one_revolution 
+          throw :done_one_cycle 
         end
 
         yield sentence, line
