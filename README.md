@@ -35,12 +35,16 @@ gps = Nmea::Gps.new serialport update_hz: 10
 
 # this will be called automatically!!
 gps.rmc do |rmc|
+  # you will get a sentence object as a parameter
+  # for gsv callback, it will be an array containing multiple gsv objects [gsv, gsv, gsv]
   p rmc.time
   p rmc.latitude
   p rmc.longitude
   p rmc.heading
   p rmc.date
 end
+# sentences > https://github.com/github0013/nmea_gps/tree/master/lib/nmea_gps/sentences
+# you have a callback on each sentence such as gga, gll ..., 
 
 # built-in error callback (catch errors in the internal thread)
 gps.error do |exception|
@@ -84,6 +88,9 @@ gps.track!
 # then close the connection
 # serialport.close
 ```
+
+## sentences
+[click here](https://github.com/github0013/nmea_gps/tree/master/lib/nmea_gps/sentences) for details
 
 ## Contributing
 
