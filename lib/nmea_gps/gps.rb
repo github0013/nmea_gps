@@ -11,7 +11,7 @@ module Nmea
 
     Dir[Pathname(__FILE__).join("../sentences/*.rb")].collect do |path|
       Pathname(path).basename(".rb").to_s
-    end.each do |sentence|
+    end.tap{|array| array << "error" }.each do |sentence|
       define_method(sentence) do |&block|
         self.callbacks[__callee__] = block
       end
@@ -72,7 +72,6 @@ module Nmea
       def callback!
         this_set = sentences_in_a_cycle
         this_set.keys.each do |sentence|
-          # TODO: error handling / add a logger??
           begin
             this_callback = self.callbacks[sentence]
             next unless this_callback
@@ -89,10 +88,12 @@ module Nmea
 
             this_callback.call object
           rescue => ex
-            puts "#{ex.message} sentence:#{sentence} / #{this_set[sentence]}"
-            puts ex.backtrace.join "\n"
+            self.callbacks[:error].call ex
           end
         end
+
+      rescue => ex
+        self.callbacks[:error].call ex
       end
 
 

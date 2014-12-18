@@ -42,6 +42,12 @@ gps.rmc do |rmc|
   p rmc.date
 end
 
+# built-in error callback (catch errors in the internal thread)
+gps.error do |exception|
+  p exception.message
+  puts exception.backtrace.join "\n"
+end
+
 # start the tracking
 gps.track!
 
