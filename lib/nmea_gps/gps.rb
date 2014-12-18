@@ -73,7 +73,7 @@ module Nmea
                   target_class.new(this_set[sentence].first)
                 end
 
-          this_callback.call object
+          this_callback.call object # TODO: error handling
         end
       end
 
