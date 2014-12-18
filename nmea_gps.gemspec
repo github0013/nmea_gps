@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.email         = ["orenoimac@gmail.com"]
   spec.summary       = %q{NMEA GPS logs to trigger a callback on each NMEA 0183 sentence.}
   spec.description   = %q{add your serialport object, and you'll get callbacks every time the serialport gets logs.}
-  spec.homepage      = ""
+  spec.homepage      = "https://github.com/github0013/nmea_gps"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
