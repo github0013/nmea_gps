@@ -11,7 +11,7 @@ module Nmea
 
     Dir[Pathname(__FILE__).join("../sentences/*.rb")].collect do |path|
       Pathname(path).basename(".rb").to_s
-    end.tap{|array| array << "error" }.each do |sentence|
+    end.tap{|array| array << "error" << "all" }.each do |sentence|
       define_method(sentence) do |&block|
         self.callbacks[__callee__] = block
       end
@@ -72,9 +72,6 @@ module Nmea
       def callback!
         sentences_in_a_cycle.each do |sentence, raw_sentence_lines_in_array|
           begin
-            this_callback = self.callbacks[sentence]
-            next unless this_callback
-
             target_class = "Nmea::Gps::#{sentence.to_s.camelcase}".constantize
 
             object = if sentence == :gsv
@@ -85,7 +82,8 @@ module Nmea
                     target_class.new(raw_sentence_lines_in_array.first)
                   end
 
-            this_callback.call object
+            self.callbacks[sentence].call object         if self.callbacks[sentence]
+            self.callbacks[:all].call [sentence, object] if self.callbacks[:all]
           rescue => ex
             self.callbacks[:error].call ex if self.callbacks[:error]
           end
