@@ -87,12 +87,12 @@ module Nmea
 
             this_callback.call object
           rescue => ex
-            self.callbacks[:error].call ex
+            self.callbacks[:error].call ex if self.callbacks[:error]
           end
         end
 
       rescue => ex
-        self.callbacks[:error].call ex
+        self.callbacks[:error].call ex if self.callbacks[:error]
       end
 
 
