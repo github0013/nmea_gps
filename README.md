@@ -1,3 +1,5 @@
+![](https://raw.githubusercontent.com/github0013/nmea_gps/master/lib/images/top.jpg)  
+
 ## Why another NMEA gem?
 I was looking for a NMEA gem, but none of them I could find were written in the ruby-way.  
 I wanted to get GPS data pushed when it gets updated, so I created one.
