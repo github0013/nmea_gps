@@ -37,6 +37,7 @@ gps = Nmea::Gps.new serialport update_hz: 10
 gps.rmc do |rmc|
   # you will get a sentence object as a parameter
   # for gsv callback, it will be an array containing multiple gsv objects [gsv, gsv, gsv]
+  p rmc.raw_sentence_line
   p rmc.time
   p rmc.latitude
   p rmc.longitude
