@@ -15,6 +15,10 @@ module Nmea
       define_method(sentence) do |&block|
         self.callbacks[__callee__] = block
       end
+
+      define_method("clear_#{sentence}") do 
+        self.callbacks.delete(sentence.to_sym)
+      end
     end
 
     def track!
