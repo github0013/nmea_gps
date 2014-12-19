@@ -88,6 +88,18 @@ describe Nmea::Gps do
 
   end
 
+  describe "callbacks" do
+    it{ expect(gps).to respond_to "gga" }
+    it{ expect(gps).to respond_to "gll" }
+    it{ expect(gps).to respond_to "gsa" }
+    it{ expect(gps).to respond_to "gsv" }
+    it{ expect(gps).to respond_to "rmc" }
+    it{ expect(gps).to respond_to "vtg" }
+    it{ expect(gps).to respond_to "zda" }
+    it{ expect(gps).to respond_to "error" }
+    it{ expect(gps).to respond_to "all" }
+  end
+
   describe "callback!" do
     before do
       allow(gps).to receive(:sentences_in_a_cycle).and_return(
