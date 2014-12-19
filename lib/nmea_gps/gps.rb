@@ -2,6 +2,13 @@ module Nmea
 
   class Gps
     TALKER_ID = "GP"
+    class << self
+      def sentence_names
+        Dir[Pathname(__FILE__).join("../sentences/*.rb")].collect do |path|
+          Pathname(path).basename(".rb").to_s
+        end
+      end
+    end
 
     def initialize(serial_port, hz: 1)
       self.callbacks        = {}
@@ -9,9 +16,7 @@ module Nmea
       self.update_hz        = 1.second.to_f / (hz.to_i.zero? ? 1 : hz.to_i)
     end
 
-    Dir[Pathname(__FILE__).join("../sentences/*.rb")].collect do |path|
-      Pathname(path).basename(".rb").to_s
-    end.tap{|array| array << "error" << "all" }.each do |sentence|
+    sentence_names.tap{|array| array << "error" << "all" }.each do |sentence|
       define_method(sentence) do |&block|
         self.callbacks[__callee__] = block
       end
@@ -55,12 +60,15 @@ module Nmea
         end
       end
 
+      def sentence_name_reg
+        @sentence_name_reg ||= /\A\$#{TALKER_ID}([#{self.class.sentence_names.join.chars.uniq.sort.join.upcase}]{3})/
+      end
+
       def ensure_sentence
         yield *@buffer if @buffer
 
         raw_sentence_line = self.gps_serial_port.gets("\r\n").strip
-        #                   %w[ GLL RMC VTG GGA GSA GSV ZDA].join.chars.uniq.sort.join
-        return unless match = raw_sentence_line.match(/\A\$#{TALKER_ID}([ACDGLMRSTVZ]{3})/)
+        return unless match = raw_sentence_line.match(sentence_name_reg)
         
         sentence = match[1].downcase.to_sym
         if sentence == self.initial_sentence
