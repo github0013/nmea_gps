@@ -90,6 +90,16 @@ gps.track!
 # ..
 # ..
 
+
+# you can clear callbacks on the run
+gps.clear_rmc # this will stop the call instantly
+
+
+# you can even start a callback on the run 
+gps.gga do |gga|
+  p [gga.latitude, gga.longitude]
+end
+
 # when you want to stop callbacks, you can call this
 # gps.stop!
 # then close the connection
