@@ -53,6 +53,12 @@ gps.error do |exception|
   puts exception.backtrace.join "\n"
 end
 
+# if you want to receive all ...
+gps.all do |sentence, sentence_object|
+  p sentence         # such as :gga, :rmc
+  p sentence_object  # such as Nmea::Gps::Rmc, [Nmea::Gps::Gsv, Nmea::Gps::Gsv, ...]
+end
+
 # start the tracking
 gps.track!
 
