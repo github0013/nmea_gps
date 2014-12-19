@@ -15,9 +15,10 @@ module Nmea
         "E" => :dr,
       }
 
+      attr_reader :raw_sentence_line
 
-      def initialize(line)
-        @line = line
+      def initialize(raw_sentence_line)
+        @raw_sentence_line = raw_sentence_line
       end
 
       def name
@@ -25,12 +26,9 @@ module Nmea
       end
 
       def raw_data
-        _, *data = self.line.split("*").first.split(",")
+        _, *data = self.raw_sentence_line.split("*").first.split(",")
         data
       end
-
-      protected
-        attr_reader :line
 
     end
   end

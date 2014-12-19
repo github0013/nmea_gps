@@ -43,8 +43,8 @@ module Nmea
         Hash.new{|hash, key| hash[key] = [] }.tap do |set|
           catch(:done_one_cycle) do
             loop do 
-              ensure_sentence do |sentence, line|
-                set[sentence] << line
+              ensure_sentence do |sentence, raw_sentence_line|
+                set[sentence] << raw_sentence_line
               end
             end
           end
@@ -54,24 +54,23 @@ module Nmea
       def ensure_sentence
         yield *@buffer if @buffer
 
-        line = self.gps_serial_port.gets("\r\n").strip
+        raw_sentence_line = self.gps_serial_port.gets("\r\n").strip
         #                   %w[ GLL RMC VTG GGA GSA GSV ZDA].join.chars.uniq.sort.join
-        return unless match = line.match(/\A\$#{TALKER_ID}([ACDGLMRSTVZ]{3})/)
+        return unless match = raw_sentence_line.match(/\A\$#{TALKER_ID}([ACDGLMRSTVZ]{3})/)
         
         sentence = match[1].downcase.to_sym
         if sentence == self.initial_sentence
-          @buffer = [sentence, line]
+          @buffer = [sentence, raw_sentence_line]
           throw :done_one_cycle 
         end
 
-        yield sentence, line
+        yield sentence, raw_sentence_line
 
         self.initial_sentence ||= sentence unless sentence == :gsv 
       end
 
       def callback!
-        this_set = sentences_in_a_cycle
-        this_set.keys.each do |sentence|
+        sentences_in_a_cycle.each do |sentence, raw_sentence_lines_in_array|
           begin
             this_callback = self.callbacks[sentence]
             next unless this_callback
@@ -79,11 +78,11 @@ module Nmea
             target_class = "Nmea::Gps::#{sentence.to_s.camelcase}".constantize
 
             object = if sentence == :gsv
-                    this_set[sentence].sort.collect do |line|
-                      target_class.new line
+                    raw_sentence_lines_in_array.sort.collect do |raw_sentence|
+                      target_class.new raw_sentence
                     end
                   else
-                    target_class.new(this_set[sentence].first)
+                    target_class.new(raw_sentence_lines_in_array.first)
                   end
 
             this_callback.call object

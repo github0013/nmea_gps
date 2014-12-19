@@ -2,12 +2,12 @@ require 'spec_helper'
 require 'nmea_gps/sentence_base'
 
 describe Nmea::Gps::SentenceBase do
-  let(:line){ "" }
-  subject{ Nmea::Gps::SentenceBase.new line }
+  let(:raw_sentence_line){ "" }
+  subject{ Nmea::Gps::SentenceBase.new raw_sentence_line }
 
   describe "initialize" do
-    let(:line){ "line" }
-    it{ expect(subject.instance_eval{@line}).to eq line }
+    let(:raw_sentence_line){ "raw_sentence_line" }
+    it{ expect(subject.raw_sentence_line).to eq raw_sentence_line }
   end
 
   describe "name" do
@@ -15,7 +15,7 @@ describe Nmea::Gps::SentenceBase do
   end
 
   describe "raw_data" do
-    let(:line){ "$GPNAME,#{(0..9).to_a.join(",")}*sum" }
+    let(:raw_sentence_line){ "$GPNAME,#{(0..9).to_a.join(",")}*sum" }
 
     it{ expect(subject.raw_data.first).to eq "0" }
     it{ expect(subject.raw_data.last).to eq "9" }
