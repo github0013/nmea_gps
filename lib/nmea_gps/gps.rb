@@ -23,6 +23,8 @@ module Nmea
     end
 
     def track!
+      return if self.track_thread
+
       self.track_thread = Thread.new do 
         loop do 
           callback!
@@ -32,7 +34,10 @@ module Nmea
     end
 
     def stop!
-      self.track_thread.kill if self.track_thread.respond_to? :kill
+      return unless self.track_thread.respond_to? :kill
+      
+      self.track_thread.kill 
+      self.track_thread = nil
     end
 
     protected
