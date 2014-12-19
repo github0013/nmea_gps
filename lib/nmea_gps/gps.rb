@@ -1,14 +1,10 @@
 module Nmea
 
   class Gps
-    TALKER_ID = "GP"
-    class << self
-      def sentence_names
-        Dir[Pathname(__FILE__).join("../sentences/*.rb")].collect do |path|
-          Pathname(path).basename(".rb").to_s
-        end
-      end
-    end
+    TALKER_ID = "GP".freeze
+    SENTENCE_NAMES = Dir[Pathname(__FILE__).join("../sentences/*.rb")].collect do |path|
+      Pathname(path).basename(".rb").to_s
+    end.freeze
 
     def initialize(serial_port, hz: 1)
       self.callbacks        = {}
@@ -16,7 +12,7 @@ module Nmea
       self.update_hz        = 1.second.to_f / (hz.to_i.zero? ? 1 : hz.to_i)
     end
 
-    sentence_names.tap{|array| array << "error" << "all" }.each do |sentence|
+    (SENTENCE_NAMES + %w[error all]).each do |sentence|
       define_method(sentence) do |&block|
         self.callbacks[__callee__] = block
       end
@@ -61,7 +57,7 @@ module Nmea
       end
 
       def sentence_name_reg
-        @sentence_name_reg ||= /\A\$#{TALKER_ID}([#{self.class.sentence_names.join.chars.uniq.sort.join.upcase}]{3})/
+        @sentence_name_reg ||= /\A\$#{TALKER_ID}([#{SENTENCE_NAMES.join.chars.uniq.sort.join.upcase}]{3})/
       end
 
       def ensure_sentence
