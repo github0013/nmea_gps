@@ -12,13 +12,13 @@ module Nmea
       self.update_hz        = 1.second.to_f / (hz.to_i.zero? ? 1 : hz.to_i)
     end
 
-    (SENTENCE_NAMES + %w[error all]).each do |sentence|
-      define_method(sentence) do |&block|
+    (SENTENCE_NAMES + %w[error all]).each do |callback_name|
+      define_method(callback_name) do |&block|
         self.callbacks[__callee__] = block
       end
 
-      define_method("clear_#{sentence}") do 
-        self.callbacks.delete(sentence.to_sym)
+      define_method("clear_#{callback_name}") do 
+        self.callbacks.delete(callback_name.to_sym)
       end
     end
 
