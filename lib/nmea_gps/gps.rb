@@ -79,6 +79,7 @@ module Nmea
 
         yield sentence, raw_sentence_line
 
+        # TODO: if set up to only receive gsv sentence by pmtk314 command, infinite loop happens
         self.initial_sentence ||= sentence unless sentence == :gsv 
       end
 
